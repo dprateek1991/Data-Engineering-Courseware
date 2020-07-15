@@ -19,12 +19,12 @@ variable "vnet_name" {
 }
 
 variable "vnet_address_space" {
-  type        = list(string)
+  type        = list
   description = "Virtual Network address space"
 }
 
 variable "subnet_address_space" {
-  type        = list
+  type        = list(string)
   description = "Subnet address space"
 }
 
