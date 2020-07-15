@@ -1,0 +1,97 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of the Azure Machine Learning workspace."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "basic",
+      "allowedValues": [
+        "basic",
+        "enterprise"
+      ],
+      "metadata": {
+        "description": "Specifies the sku, also referred to as 'edition' of the Azure Machine Learning workspace."
+      }
+    },
+    "resourceTags": {
+      "type": "object",
+      "defaultValue": {
+        "Team": "DataEngineeringE2E"
+      }
+    },
+    "applicationInsightsName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of Application Insights"
+      }
+    },
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of Key Vault"
+      }
+    },
+    "containerRegistryName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of ACR"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of Storage Account"
+      }
+    },
+    "keyVaultURI": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the Customer Managed Key Vault URI"
+      }
+    }
+  },
+  "variables": {
+    "sku": "basic",
+    "storageAccountType": "Standard_LRS",
+    "tenantId": "[subscription().tenantId]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2020-01-01",
+      "name": "[parameters('workspaceName')]",
+      "location": "southeastasia",
+      "tags": "[parameters('resourceTags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "sku": {
+        "tier": "[variables('sku')]",
+        "name": "[variables('sku')]"
+      },
+      "properties": {
+        "friendlyName": "[parameters('workspaceName')]",
+        "keyVault": "[resourceId('Microsoft.KeyVault/vaults',parameters('keyVaultName'))]",
+        "applicationInsights": "[resourceId('Microsoft.Insights/components',parameters('applicationInsightsName'))]",
+        "containerRegistry": "[resourceId('Microsoft.ContainerRegistry/registries',parameters('containerRegistryName'))]",
+        "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts',parameters('storageAccountName'))]",
+        "keyVaultProperties": {
+          "keyVaultArmId": "[parameters('keyVaultName')]",
+          "keyIdentifier": "[parameters('keyVaultURI')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.MachineLearningServices/workspaces',parameters('workspaceName'))]"
+    }
+  }
+}
