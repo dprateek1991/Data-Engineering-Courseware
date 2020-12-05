@@ -3,39 +3,34 @@ kind: Deployment
 metadata:
   namespace: spark
   name: notebook-deployment
-  labels:
-    app: notebook
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: notebook
+      app: notebook-deployment
   template:
     metadata:
       labels:
-        app: notebook
+        app: notebook-deployment
     spec:
-      imagePullSecrets:
-        - name: dockerlogin
       serviceAccountName: spark
       containers:
       - name: notebook
-        image: dataengineeringe2e/spark-jupyter-ubuntu-2.4.5:latest
+        image: dataengineeringe2e/spark-jupyter-ubuntu-2.4.4
         ports:
-          - containerPort: 8888
-        workingDir: /root
-        resources:
-          limits:
-            memory: 2Gi
+        - containerPort: 8888
+        workingDir: /home
+      imagePullSecrets:
+        - name: dockerlogin
 ---
 apiVersion: v1
 kind: Service
 metadata:
   namespace: spark
-  name: notebook-deployment
+  name: notebook-service
 spec:
   selector:
-    app: notebook
+    app: notebook-deployment
   ports:
     - protocol: TCP
       port: 29413

@@ -1,12 +1,6 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-LABEL maintainer="Prateek Dubey"
-
-ENV SCALA_VERSION=2.11.12 \
-    SCALA_HOME=/usr/share/scala
-
-ENV APACHE_SPARK_VERSION 2.4.5
-ENV HADOOP_VERSION 2.7
+ARG SPARK_VER=2.4.4
 
 WORKDIR /root
 
@@ -24,6 +18,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	pkg-config \
 	python3 \
 	python3-dev \
+	python3-distutils \
 	software-properties-common \
 	sudo \
 	tar \
@@ -35,7 +30,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # Get the latest pip3
 RUN wget -q https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && rm -f get-pip.py
 
-# Install python3
+# Install python3 infrastructure
 COPY requirements.txt .
 RUN pip3 --no-cache-dir install -r requirements.txt && rm -f requirements.txt
 
@@ -46,7 +41,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install Spark
-RUN wget -q -O spark.tgz https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
+RUN wget -q -O spark.tgz https://archive.apache.org/dist/spark/spark-${SPARK_VER}/spark-${SPARK_VER}-bin-hadoop2.7.tgz && \
 	mkdir -p /usr/local && tar -xf spark.tgz -C /usr/local && \
 	mv /usr/local/spark*${SPARK_VER}* /usr/local/spark && \
     	pip3 install --upgrade pyspark
