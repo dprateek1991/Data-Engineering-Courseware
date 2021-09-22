@@ -58,10 +58,6 @@ RUN cp *.jar /opt/spark/jars/
 # Config templates
 COPY conf/ $SPARK_HOME/conf/
 
-# Sample data 
-RUN mkdir -p /opt/spark/data/batch/
-COPY sample_data/ /opt/spark/data/batch/
-
 # Install python libs
 RUN conda config --system --prepend channels conda-forge && \
     conda config --system --set auto_update_conda false && \
