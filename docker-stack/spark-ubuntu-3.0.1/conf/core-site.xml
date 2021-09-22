@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+  
+  <property>
+    <name>fs.s3a.acl.default</name>
+    <value>BucketOwnerFullControl</value>
+  </property>
+
+  <property>
+    <name>parquet.summary.metadata.level</name>
+    <value>ALL</value>
+  </property>
+
+  <property>
+    <name>fs.s3a.access.key</name>
+    <description>AWS access key ID.Omit for IAM role-based or provider-based authentication.</description>
+  </property>
+
+  <property>
+    <name>fs.s3a.secret.key</name>
+    <description>AWS secret key.Omit for IAM role-based or provider-based authentication.</description>
+  </property>
+
+  <property>
+    <name>fs.s3a.aws.credentials.provider</name>
+    <value>org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider, com.amazonaws.auth.EnvironmentVariableCredentialsProvider, com.amazonaws.auth.InstanceProfileCredentialsProvider</value>
+  </property>
+
+  <property>
+    <name>mapreduce.outputcommitter.factory.scheme.s3a</name>
+    <value>org.apache.hadoop.fs.s3a.commit.S3ACommitterFactory</value>
+    <description>
+    The committer factory to use when writing data to S3A filesystems.
+    </description>
+  </property>
+
+  <property>
+    <name>fs.s3a.committer.name</name>
+    <value>file</value>
+    <description>
+    Committer to create for output to S3A, one of:
+    "file", "directory", "partitioned", "magic".
+    </description>
+  </property>
+
+  <property>
+    <name>fs.s3a.committer.threads</name>
+    <value>8</value>
+    <description>
+    Number of threads in committers for parallel operations on files (upload, commit, abort, delete...)
+    </description>
+  </property>
+  
+  <property>
+    <name>fs.s3a.committer.staging.tmp.path</name>
+    <value>tmp/staging</value>
+    <description>
+    Path in the cluster filesystem for temporary data. This is for HDFS, not the local filesystem. It is only for the summary data of each file, not the actual
+    data being committed. Using an unqualified path guarantees that the full path will be generated relative to the home directory of the user creating the job,
+    hence private (assuming home directory permissions are secure).
+    </description>
+  </property>
+
+  <property>
+    <name>fs.s3a.committer.staging.unique-filenames</name>
+    <value>true</value>
+    <description>
+    Option for final files to have a unique name through job attempt info, or the value of fs.s3a.committer.staging.uuid When writing data with the "append" conflict option, 
+    this guarantees that new data will not overwrite any existing data.
+    </description>
+  </property>
+
+  <property>
+    <name>fs.s3a.committer.staging.conflict-mode</name>
+    <value>fail</value>
+    <description>
+    Staging committer conflict resolution policy. Supported: "fail", "append", "replace".
+    </description>
+  </property>
+
+  <property>
+    <name>fs.s3a.committer.staging.abort.pending.uploads</name>
+    <value>true</value>
+    <description>
+    Should the staging committers abort all pending uploads to the destination
+      directory?
+    Changing this if more than one partitioned committer is writing to the same destination tree simultaneously; otherwise the first job to complete will cancel all outstanding uploads from the
+    others. However, it may lead to leaked outstanding uploads from failed tasks. If disabled, configure the bucket lifecycle to remove uploads
+    after a time period, and/or set up a workflow to explicitly delete entries. Otherwise there is a risk that uncommitted uploads may run up bills.
+    </description>
+  </property>
+
+  <property>
+    <name>fs.s3a.buffer.dir</name>
+    <value>/tmp</value>
+  </property>
+  
+</configuration>
